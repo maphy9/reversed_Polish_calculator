@@ -1,9 +1,10 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "stack.h"
+#include "getop.h"
 
-#define LENGTH	100
-#define NUMBER 	'0'
+#define SIZE	100
 
 char getop(char* s);
 void push(double x);
@@ -16,7 +17,7 @@ void print_top();
 int main() {
 	char type;
 	double x1;
-	char s[LENGTH];
+	char s[SIZE];
 
 	while ((type = getop(s)) != EOF) {
 		switch (type) {
@@ -84,155 +85,4 @@ int main() {
 	}
 
 	return 0;
-}
-
-
-// stack
-int stack_pos = 0;
-double stack[LENGTH];
-
-void push(double x) {
-	if (stack_pos == LENGTH)
-		printf("Error: stack is full\n");
-	else
-		stack[stack_pos++] = x;
-}
-
-double pop() {
-	if (stack_pos == 0) {
-		printf("Error: stack is empty\n");
-		return 0.0;
-	}
-
-	return stack[--stack_pos];
-}
-
-void clear() {
-	stack_pos = 0;
-}
-
-void swap() {
-	if (stack_pos == 0)
-		printf("Error: stack is empty\n");
-	else if (stack_pos == 1)
-		printf("Error: too few elements in the stack\n");
-	else {
-		double temp = stack[stack_pos - 1];
-		stack[stack_pos - 1] = stack[stack_pos - 2];
-		stack[stack_pos - 2] = temp;
-	}
-}
-
-void duplicate() {
-	if (stack_pos == 0)
-		printf("Error: stack is empty\n");
-	else if (stack_pos == LENGTH)
-		printf("Error: stack is full\n");
-	else {
-		stack[stack_pos] = stack[stack_pos - 1];
-		stack_pos++;
-	}
-}
-
-void print_top() {
-	if (stack_pos == 0)
-		printf("Error: stack is empty\n");
-	else
-		printf("%lf\n", stack[stack_pos - 1]);
-}
-
-
-// get operator
-#define BUFSIZE	100
-
-char buf[BUFSIZE];
-int buf_pos = 0;
-
-int getch() {
-	return buf_pos == 0 ? getchar() : buf[--buf_pos];
-}
-
-void ungetch(char c) {
-	if (buf_pos == BUFSIZE)
-		printf("Error: buffer is full\n");
-	else
-		buf[buf_pos++] = c;
-}
-
-int is_digit(char c) {
-	return c >= '0' && c <= '9';
-}
-
-char getop(char* s) {
-	char c;
-	while ((*s = c = getch()) == ' ' || c == '\t');
-	*(s + 1) = '\0';
-
-	if (c == 's') {
-		char c1 = getch();
-		if (c1 == '\n') {
-			ungetch(c1);
-			return '?';
-		}
-		char c2 = getch();
-		if (c1 == 'i' && c2 == 'n')
-			return 's';
-		return '?';
-	}
-
-	if (c == 'c') {
-		char c1 = getch();
-		if (c1 == '\n') {
-			ungetch(c1);
-			return '?';
-		}
-		char c2 = getch();
-		if (c1 == 'o' && c2 == 's')
-			return 'c';
-		return '?';
-	}
-
-	if (c == 'e') {
-		char c1 = getch();
-		if (c1 == '\n') {
-			ungetch(c1);
-			return '?';
-		}
-		char c2 = getch();
-		if (c1 == 'x' && c2 == 'p')
-			return 'e';
-		return '?';
-	}
-
-	if (c == 'p') {
-		char c1 = getch();
-		if (c1 == '\n') {
-			ungetch(c1);
-			return '?';
-		}
-		char c2 = getch();
-		if (c1 == 'o' && c2 == 'w')
-			return 'p';
-		return '?';
-	}
-
-	if (!is_digit(c) && c != '.' && c != '-') {
-		return c;
-	}
-
-	int i = 0;
-	if (is_digit(c) || c == '-')
-		while (is_digit(*(s + (++i)) = c = getch()));
-	if (i == 1 && *s == '-') {
-		ungetch(c);
-		*(s + 1) = '\0';
-		return '-';
-	}
-	if (c == '.')
-		while (is_digit(*(s + (++i)) = c = getch()));
-
-	*(s + i) = '\0';
-	if (c != EOF)
-		ungetch(c);
-	return NUMBER;
 }
